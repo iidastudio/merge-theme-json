@@ -1,0 +1,13 @@
+{
+  "name": "json-merge-test",
+  "version": "1.0.0",
+  "description": "json file merge test env.",
+  "main": "index.js",
+  "author": "Takayuki Iida",
+  "license": "ISC",
+  "type": "module",
+  "scripts": {},
+  "dependencies": {
+    "lodash-es": "^4.17.21"
+  }
+}

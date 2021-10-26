@@ -1,6 +1,10 @@
 import { merge } from 'lodash-es';
 import fs from 'fs';
 import path from 'path';
+const targetDir = './json';
+const baseObj = JSON.parse(fs.readFileSync('./json/base.json', 'utf8'));;
+let resultObj = {};
+let directories = [];
 
 // check functions
 const isJsonFile = (item, itemPath) => item && fs.statSync(itemPath).isFile() && item.match(/^_.*\.(json)$/);

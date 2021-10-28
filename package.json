@@ -1,13 +1,18 @@
 {
   "name": "json-merge-test",
   "version": "1.0.0",
-  "description": "json file merge test env.",
+  "description": "Merge multiple json files to generate theme.json for WordPress",
   "main": "index.js",
   "author": "Takayuki Iida",
   "license": "ISC",
-  "scripts": {
-
+  "repository": {
+    "type": "git",
+    "url": "git//github.com/iidastudio/merge-theme-json"
   },
+  "bin": {
+    "merge-theme-json": "cli.js"
+  },
+  "scripts": {},
   "dependencies": {
     "commander": "^8.3.0",
     "lodash": "^4.17.21"

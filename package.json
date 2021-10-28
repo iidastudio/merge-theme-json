@@ -5,9 +5,11 @@
   "main": "index.js",
   "author": "Takayuki Iida",
   "license": "ISC",
-  "type": "module",
-  "scripts": {},
+  "scripts": {
+
+  },
   "dependencies": {
-    "lodash-es": "^4.17.21"
+    "commander": "^8.3.0",
+    "lodash": "^4.17.21"
   }
 }

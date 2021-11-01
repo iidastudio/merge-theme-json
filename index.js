@@ -1,4 +1,4 @@
-const lodash = require('lodash');
+const merge = require('lodash.merge');
 const fs = require('fs');
 const path = require('path');
 
@@ -14,7 +14,7 @@ module.exports = class MergeThemeJson {
   }
   
   // get file and directory names
-  getJsonFiles = (dir) => {
+  getJsonFiles(dir) {
     if (fs.existsSync(dir)) {
       const filenames = fs.readdirSync(dir);
       
@@ -37,14 +37,55 @@ module.exports = class MergeThemeJson {
     }
   }
 
+  // delete propaties prefixed with a "//".
+  deleteComment(sourceObj) {
+    for (const key in sourceObj) {
+      if (key.match(/^\/\//)) {
+        delete sourceObj[key];
+      }
+      const sourceValue = sourceObj[key];
+      if (typeof sourceValue === "object") {
+        this.deleteComment(sourceValue);
+      }
+    }
+  }
+
+  // delete {} and []
+  deleteEmptyPropaty(obj) {
+    for (const key in obj) {
+      const strValue = JSON.stringify(obj[key]);
+      if (strValue === '{}' || strValue === '[]') {
+        delete obj[key];
+      }
+      if (typeof obj[key] === "object") {
+        this.deleteEmptyPropaty(obj[key]);
+      }
+    }
+  }
+
+  // delete null object
+  deleteArrayNull(obj) {
+    for (const key in obj) {
+      // console.log(obj[key]);
+      // console.log('===============');
+      if (Array.isArray(obj[key])) {
+        obj[key] = obj[key].filter(v => v);
+      }
+      if (typeof obj[key] === "object") {
+        this.deleteArrayNull(obj[key]);
+      }
+    }
+  }
+
   // merge json objects
-  mergeJson = (jsonFiles) => {
+  mergeJson(jsonFiles) {
     if (fs.existsSync(this.baseFile)) {
       const baseObj = JSON.parse(fs.readFileSync(this.baseFile, 'utf8'));
       for (let i = 0; i < jsonFiles.length; i++) {
         const jsonFile = jsonFiles[i];
-        const targetObj = JSON.parse(fs.readFileSync(jsonFile, 'utf8'));
-        this.resultObj = lodash.merge(baseObj, targetObj);
+        const sourceObj = JSON.parse(fs.readFileSync(jsonFile, 'utf8'));
+        this.deleteComment(sourceObj);
+        this.resultObj = merge(baseObj, sourceObj);
       }
     } else {
       console.error('This file is not found. %j', this.baseFile);
@@ -52,7 +93,7 @@ module.exports = class MergeThemeJson {
   }
 
   // export json
-  exportJson = (resultObj) => {
+  exportJson(resultObj) {
     const result = JSON.stringify(resultObj, null, 2);
     if(!this.output.match(/.*\.(json)$/)) {
       this.output = this.output + '.json';
@@ -61,7 +102,7 @@ module.exports = class MergeThemeJson {
   }
 
   // use all functions to generate merged json
-  run = () => {
+  run() {
     let isTargetDir;
     for (let i = 0; i < this.targetDirArray.length; i++) {
       const targetDir = this.targetDirArray[i];
@@ -78,6 +119,12 @@ module.exports = class MergeThemeJson {
     }
     if (isTargetDir === true) {
       this.mergeJson(this.jsonFiles);
+      // delete {} and []
+      this.deleteEmptyPropaty(this.resultObj);
+      // delete generated null by the aforementioned function
+      this.deleteArrayNull(this.resultObj);
+      // delete generated {} and [] by the aforementioned function
+      this.deleteEmptyPropaty(this.resultObj);
       this.exportJson(this.resultObj);
     }
   }

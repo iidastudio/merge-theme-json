@@ -66,8 +66,6 @@ module.exports = class MergeThemeJson {
   // delete null object
   deleteArrayNull(obj) {
     for (const key in obj) {
-      // console.log(obj[key]);
-      // console.log('===============');
       if (Array.isArray(obj[key])) {
         obj[key] = obj[key].filter(v => v);
       }
